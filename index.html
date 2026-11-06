@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Learning Module</title>
+<style>
+  :root {
+    --bg: #0f1221;
+    --panel: #1a1f36;
+    --panel-2: #232947;
+    --text: #e8ecf5;
+    --muted: #9aa3bf;
+    --accent: #6366f1;
+    --accent-2: #8b5cf6;
+    --danger: #ef4444;
+    --border: #2a3056;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(180deg, #0b0e1d 0%, #0f1221 100%);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(26, 31, 54, 0.6);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 24px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  header p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  .add-form {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .add-form h2 { margin: 0 0 16px; font-size: 18px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 13px; color: var(--muted); }
+  input, textarea, select {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  button {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  button:hover { transform: translateY(-1px); }
+  button.secondary {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+  }
+  button.danger {
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .toolbar input { flex: 1; min-width: 200px; }
+  .modules {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .module {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s;
+  }
+  .module:hover { border-color: var(--accent); }
+  .video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    background: #000;
+  }
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .module-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+  .module-body h3 { margin: 0 0 8px; font-size: 16px; }
+  .module-body p { margin: 0 0 12px; font-size: 13px; color: var(--muted); flex: 1; }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .tag {
+    display: inline-block;
+    background: var(--panel-2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--accent);
+    margin-right: 4px;
+  }
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .error { color: var(--danger); font-size: 13px; margin-top: 8px; }
+  @media (max-width: 640px) {
+    .row { grid-template-columns: 1fr; }
+    header, main { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>My Learning Module</h1>
+  <p>Add YouTube videos and organize them into lessons</p>
+</header>
+
+<main>
+  <section class="add-form">
+    <h2>Add a Video</h2>
+    <div class="field" style="margin-bottom: 12px;">
+      <label for="url">YouTube URL or Video ID</label>
+      <input type="text" id="url" placeholder="https://www.youtube.com/watch?v=..." />
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="title">Title</label>
+        <input type="text" id="title" placeholder="Lesson title" />
+      </div>
+      <div class="field">
+        <label for="category">Category</label>
+        <input type="text" id="category" placeholder="e.g. Math, Programming" />
+      </div>
+    </div>
+    <div class="field" style="margin-bottom: 12px;">
+      <label for="description">Description (optional)</label>
+      <textarea id="description" placeholder="What is this lesson about?"></textarea>
+    </div>
+    <button onclick="addModule()">Add to Modules</button>
+    <div class="error" id="error"></div>
+  </section>
+
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Search modules..." oninput="render()" />
+    <select id="filter" onchange="render()">
+      <option value="">All categories</option>
+    </select>
+    <button class="secondary" onclick="exportData()">Export</button>
+    <button class="secondary" onclick="document.getElementById('import-file').click()">Import</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)" />
+  </div>
+
+  <div id="modules" class="modules"></div>
+</main>
+
+<script>
+  const STORAGE_KEY = 'learning-modules';
+  let modules = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+  function extractVideoId(input) {
+    if (!input) return null;
+    input = input.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+      /[?&]v=([a-zA-Z0-9_-]{11})/
+    ];
+    for (const p of patterns) {
+      const m = input.match(p);
+      if (m) return m[1];
+    }
+    return null;
+  }
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(modules));
+  }
+
+  function addModule() {
+    const url = document.getElementById('url').value;
+    const title = document.getElementById('title').value.trim();
+    const category = document.getElementById('category').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const errorEl = document.getElementById('error');
+    errorEl.textContent = '';
+
+    const videoId = extractVideoId(url);
+    if (!videoId) {
+      errorEl.textContent = 'Please enter a valid YouTube URL or 11-character video ID.';
+      return;
+    }
+    if (!title) {
+      errorEl.textContent = 'Please enter a title.';
+      return;
+    }
+
+    modules.unshift({
+      id: Date.now().toString(),
+      videoId,
+      title,
+      category: category || 'Uncategorized',
+      description,
+      addedAt: new Date().toISOString()
+    });
+    save();
+
+    document.getElementById('url').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('category').value = '';
+    document.getElementById('description').value = '';
+    render();
+  }
+
+  function deleteModule(id) {
+    if (!confirm('Delete this module?')) return;
+    modules = modules.filter(m => m.id !== id);
+    save();
+    render();
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function render() {
+    const container = document.getElementById('modules');
+    const search = document.getElementById('search').value.toLowerCase();
+    const filter = document.getElementById('filter').value;
+
+    const categories = [...new Set(modules.map(m => m.category))].sort();
+    const filterEl = document.getElementById('filter');
+    const current = filterEl.value;
+    filterEl.innerHTML = '<option value="">All categories</option>' +
+      categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    filterEl.value = current;
+
+    const filtered = modules.filter(m => {
+      const matchSearch = !search ||
+        m.title.toLowerCase().includes(search) ||
+        m.description.toLowerCase().includes(search) ||
+        m.category.toLowerCase().includes(search);
+      const matchFilter = !filter || m.category === filter;
+      return matchSearch && matchFilter;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="empty" style="grid-column: 1 / -1;">
+          <div class="empty-icon">📺</div>
+          <div>${modules.length === 0 ? 'No modules yet. Add your first video above!' : 'No modules match your search.'}</div>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map(m => `
+      <div class="module">
+        <div class="video-wrapper">
+          <iframe src="https://www.youtube.com/embed/${m.videoId}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="module-body">
+          <h3>${escapeHtml(m.title)}</h3>
+          ${m.description ? `<p>${escapeHtml(m.description)}</p>` : '<p></p>'}
+          <div class="meta">
+            <span><span class="tag">${escapeHtml(m.category)}</span></span>
+            <button class="danger" onclick="deleteModule('${m.id}')">Delete</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function exportData() {
+    const blob = new Blob([JSON.stringify(modules, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `learning-modules-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!Array.isArray(data)) throw new Error('Invalid format');
+        modules = data;
+        save();
+        render();
+        alert('Imported ' + data.length + ' modules.');
+      } catch (err) {
+        alert('Failed to import: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  render();
+</script>
+</body>
+</html>
