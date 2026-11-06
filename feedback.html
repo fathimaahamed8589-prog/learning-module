@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lecture Feedback - 1st Year MBBS</title>
+<style>
+  :root {
+    --bg: #0f1221;
+    --panel: #1a1f36;
+    --panel-2: #232947;
+    --text: #e8ecf5;
+    --muted: #9aa3bf;
+    --accent: #6366f1;
+    --accent-2: #8b5cf6;
+    --success: #10b981;
+    --danger: #ef4444;
+    --border: #2a3056;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(180deg, #0b0e1d 0%, #0f1221 100%);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(26, 31, 54, 0.6);
+    backdrop-filter: blur(10px);
+  }
+  header h1 {
+    margin: 0;
+    font-size: 24px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  header p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+  main { max-width: 820px; margin: 0 auto; padding: 24px; }
+
+  form {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  fieldset {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px 18px;
+    margin: 0 0 20px;
+  }
+  legend {
+    padding: 0 8px;
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .field label, .q-label {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .q-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-size: 14px;
+  }
+  .q-label .req { color: var(--danger); margin-left: 2px; }
+  input[type="text"], input[type="date"], input[type="email"], textarea, select {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    width: 100%;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .rating {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .rating input { display: none; }
+  .rating label {
+    cursor: pointer;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all 0.15s;
+    min-width: 42px;
+    text-align: center;
+  }
+  .rating label:hover { border-color: var(--accent); color: var(--text); }
+  .rating input:checked + label {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: white;
+    border-color: transparent;
+  }
+  .scale-hint {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .radio-group, .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .radio-group label, .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text);
+    transition: border-color 0.15s;
+  }
+  .radio-group label:hover, .checkbox-group label:hover {
+    border-color: var(--accent);
+  }
+  .radio-group input, .checkbox-group input {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+  }
+
+  button {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  button:hover { transform: translateY(-1px); }
+  button.secondary {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    margin-left: 8px;
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .success-msg {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--success);
+    color: var(--success);
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  @media (max-width: 640px) {
+    .row { grid-template-columns: 1fr; }
+    header, main { padding: 16px; }
+    form { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lecture Feedback Form</h1>
+  <p>1st Year MBBS — Help us improve your learning experience</p>
+</header>
+
+<main>
+  <div class="success-msg" id="success">
+    Thank you! Your feedback has been recorded. You may download a copy below.
+  </div>
+
+  <form id="feedback-form" onsubmit="submitFeedback(event)">
+
+    <fieldset>
+      <legend>Student & Lecture Details</legend>
+      <div class="row">
+        <div class="field">
+          <label for="name">Name (optional)</label>
+          <input type="text" id="name" name="name" placeholder="Leave blank for anonymous" />
+        </div>
+        <div class="field">
+          <label for="roll">Roll No. (optional)</label>
+          <input type="text" id="roll" name="roll" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="batch">Batch / Section</label>
+          <input type="text" id="batch" name="batch" placeholder="e.g. Batch A" />
+        </div>
+        <div class="field">
+          <label for="date">Date of Lecture <span class="req">*</span></label>
+          <input type="date" id="date" name="date" required />
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="subject">Subject <span class="req">*</span></label>
+          <select id="subject" name="subject" required>
+            <option value="">-- Select subject --</option>
+            <option>Anatomy</option>
+            <option>Physiology</option>
+            <option>Biochemistry</option>
+            <option>Community Medicine</option>
+            <option>Foundation Course</option>
+            <option>AETCOM</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="faculty">Faculty / Lecturer</label>
+          <input type="text" id="faculty" name="faculty" placeholder="Name of lecturer" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="topic">Lecture Topic <span class="req">*</span></label>
+        <input type="text" id="topic" name="topic" required placeholder="e.g. Upper limb osteology, Cell membrane transport" />
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Rate the Lecture (1 = Poor, 5 = Excellent)</legend>
+
+      <div class="field">
+        <span class="q-label">1. Clarity of explanation <span class="req">*</span></span>
+        <div class="rating">
+          <input type="radio" id="clarity-1" name="clarity" value="1" required /><label for="clarity-1">1</label>
+          <input type="radio" id="clarity-2" name="clarity" value="2" /><label for="clarity-2">2</label>
+          <input type="radio" id="clarity-3" name="clarity" value="3" /><label for="clarity-3">3</label>
+          <input type="radio" id="clarity-4" name="clarity" value="4" /><label for="clarity-4">4</label>
+          <input type="radio" id="clarity-5" name="clarity" value="5" /><label for="clarity-5">5</label>
+        </div>
+        <div class="scale-hint"><span>Hard to follow</span><span>Very clear</span></div>
+      </div>
+
+      <div class="field">
+        <span class="q-label">2. Depth & coverage of content (as per competency / CBME) <span class="req">*</span></span>
+        <div class="rating">
+          <input type="radio" id="content-1" name="content" value="1" required /><label for="content-1">1</label>
+          <input type="radio" id="content-2" name="content" value="2" /><label for="content-2">2</label>
+          <input type="radio" id="content-3" name="content" value="3" /><label for="content-3">3</label>
+          <input type="radio" id="content-4" name="content" value="4" /><label for="content-4">4</label>
+          <input type="radio" id="content-5" name="content" value="5" /><label for="content-5">5</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="q-label">3. Clinical correlation / relevance to practice <span class="req">*</span></span>
+        <div class="rating">
+          <input type="radio" id="clinical-1" name="clinical" value="1" required /><label for="clinical-1">1</label>
+          <input type="radio" id="clinical-2" name="clinical" value="2" /><label for="clinical-2">2</label>
+          <input type="radio" id="clinical-3" name="clinical" value="3" /><label for="clinical-3">3</label>
+          <input type="radio" id="clinical-4" name="clinical" value="4" /><label for="clinical-4">4</label>
+          <input type="radio" id="clinical-5" name="clinical" value="5" /><label for="clinical-5">5</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="q-label">4. Quality of teaching aids (slides, diagrams, specimens, models) <span class="req">*</span></span>
+        <div class="rating">
+          <input type="radio" id="aids-1" name="aids" value="1" required /><label for="aids-1">1</label>
+          <input type="radio" id="aids-2" name="aids" value="2" /><label for="aids-2">2</label>
+          <input type="radio" id="aids-3" name="aids" value="3" /><label for="aids-3">3</label>
+          <input type="radio" id="aids-4" name="aids" value="4" /><label for="aids-4">4</label>
+          <input type="radio" id="aids-5" name="aids" value="5" /><label for="aids-5">5</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="q-label">5. Interaction & opportunity to ask questions <span class="req">*</span></span>
+        <div class="rating">
+          <input type="radio" id="interact-1" name="interact" value="1" required /><label for="interact-1">1</label>
+          <input type="radio" id="interact-2" name="interact" value="2" /><label for="interact-2">2</label>
+          <input type="radio" id="interact-3" name="interact" value="3" /><label for="interact-3">3</label>
+          <input type="radio" id="interact-4" name="interact" value="4" /><label for="interact-4">4</label>
+          <input type="radio" id="interact-5" name="interact" value="5" /><label for="interact-5">5</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="q-label">6. Pace of the lecture <span class="req">*</span></span>
+        <div class="rating">
+          <input type="radio" id="pace-1" name="pace" value="1" required /><label for="pace-1">1</label>
+          <input type="radio" id="pace-2" name="pace" value="2" /><label for="pace-2">2</label>
+          <input type="radio" id="pace-3" name="pace" value="3" /><label for="pace-3">3</label>
+          <input type="radio" id="pace-4" name="pace" value="4" /><label for="pace-4">4</label>
+          <input type="radio" id="pace-5" name="pace" value="5" /><label for="pace-5">5</label>
+        </div>
+        <div class="scale-hint"><span>Too fast / too slow</span><span>Just right</span></div>
+      </div>
+
+      <div class="field">
+        <span class="q-label">7. Audibility & communication skills of lecturer <span class="req">*</span></span>
+        <div class="rating">
+          <input type="radio" id="comm-1" name="comm" value="1" required /><label for="comm-1">1</label>
+          <input type="radio" id="comm-2" name="comm" value="2" /><label for="comm-2">2</label>
+          <input type="radio" id="comm-3" name="comm" value="3" /><label for="comm-3">3</label>
+          <input type="radio" id="comm-4" name="comm" value="4" /><label for="comm-4">4</label>
+          <input type="radio" id="comm-5" name="comm" value="5" /><label for="comm-5">5</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="q-label">8. Overall rating of the lecture <span class="req">*</span></span>
+        <div class="rating">
+          <input type="radio" id="overall-1" name="overall" value="1" required /><label for="overall-1">1</label>
+          <input type="radio" id="overall-2" name="overall" value="2" /><label for="overall-2">2</label>
+          <input type="radio" id="overall-3" name="overall" value="3" /><label for="overall-3">3</label>
+          <input type="radio" id="overall-4" name="overall" value="4" /><label for="overall-4">4</label>
+          <input type="radio" id="overall-5" name="overall" value="5" /><label for="overall-5">5</label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Learning Outcomes</legend>
+
+      <div class="field">
+        <span class="q-label">9. Were the learning objectives stated at the start of the lecture? <span class="req">*</span></span>
+        <div class="radio-group">
+          <label><input type="radio" name="objectives" value="Yes, clearly stated" required /> Yes, clearly stated</label>
+          <label><input type="radio" name="objectives" value="Mentioned briefly" /> Mentioned briefly</label>
+          <label><input type="radio" name="objectives" value="Not stated" /> Not stated</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="q-label">10. How well do you feel you have understood the topic?</span>
+        <div class="radio-group">
+          <label><input type="radio" name="understood" value="Fully understood" /> Fully understood</label>
+          <label><input type="radio" name="understood" value="Mostly understood" /> Mostly understood, some parts unclear</label>
+          <label><input type="radio" name="understood" value="Partially understood" /> Partially understood</label>
+          <label><input type="radio" name="understood" value="Did not understand" /> Did not understand</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="q-label">11. Which teaching methods were used? (select all that apply)</span>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="methods" value="Didactic lecture" /> Didactic lecture (PPT / board)</label>
+          <label><input type="checkbox" name="methods" value="Small group discussion" /> Small group discussion</label>
+          <label><input type="checkbox" name="methods" value="Case-based learning" /> Case-based learning</label>
+          <label><input type="checkbox" name="methods" value="Specimens / models" /> Specimens / models / cadaver</label>
+          <label><input type="checkbox" name="methods" value="Videos / animations" /> Videos / animations</label>
+          <label><input type="checkbox" name="methods" value="Quiz / polls" /> Quiz / polls</label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Open Feedback</legend>
+
+      <div class="field">
+        <label for="liked">12. What did you like most about this lecture?</label>
+        <textarea id="liked" name="liked" placeholder="E.g. clear diagrams, good clinical examples..."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="difficult">13. Which topic / concept did you find most difficult?</label>
+        <textarea id="difficult" name="difficult"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="suggestions">14. Suggestions to improve the lecture</label>
+        <textarea id="suggestions" name="suggestions" placeholder="Pace, examples, handouts, revision sessions..."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="additional">15. Any other comments</label>
+        <textarea id="additional" name="additional"></textarea>
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit">Submit Feedback</button>
+      <button type="button" class="secondary" onclick="downloadResponse()">Download as JSON</button>
+      <button type="reset" class="secondary">Clear</button>
+    </div>
+    <div class="note">Your responses are stored locally in this browser. Share the downloaded file with your faculty / class representative.</div>
+  </form>
+</main>
+
+<script>
+  const STORAGE_KEY = 'mbbs-lecture-feedback';
+  let lastResponse = null;
+
+  function collectForm() {
+    const form = document.getElementById('feedback-form');
+    const fd = new FormData(form);
+    const data = {};
+    for (const [key, value] of fd.entries()) {
+      if (data[key] !== undefined) {
+        if (!Array.isArray(data[key])) data[key] = [data[key]];
+        data[key].push(value);
+      } else {
+        data[key] = value;
+      }
+    }
+    data.submittedAt = new Date().toISOString();
+    return data;
+  }
+
+  function submitFeedback(e) {
+    e.preventDefault();
+    const data = collectForm();
+    lastResponse = data;
+
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      stored.push(data);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+    } catch (err) { /* storage full / disabled */ }
+
+    document.getElementById('success').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('feedback-form').reset();
+  }
+
+  function downloadResponse() {
+    const data = lastResponse || collectForm();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const stamp = new Date().toISOString().slice(0, 10);
+    a.download = `lecture-feedback-${stamp}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
